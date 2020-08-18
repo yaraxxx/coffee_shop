@@ -36,7 +36,7 @@ def view_drinks():
         drinks_list = []
         for drink in drinks:
             drinks_list.append(drink.short())
-        return {"success":True , "drinks": drinks_list}
+        return jsonify({"success":True , "drinks": drinks_list})
     except:
         abort(404)
         print(sys.exc_info())
@@ -63,7 +63,7 @@ def get_drinks_detail():
         drinks_list = []
         for drink in drinks:
             drinks_list.append(drink.long())
-        return {"success": True , "drinks": drinks_list}
+        return jsonify({"success": True , "drinks": drinks_list})
     except:
         abort(404)
         print(sys.exc_info())
@@ -91,7 +91,7 @@ def add_drink():
             )
         new_drink.insert()
         drink = new_drink.long()
-        return {"success": True , "drinks": drink}
+        return jsonify({"success": True , "drinks": drink})
     except:
         abort(422)
         print(sys.exc_info())
@@ -124,7 +124,7 @@ def update_drink(id):
         drink.update()
 
         updated_drink = drink.long()
-        return {"success": True , "drinks": updated_drink}
+        return jsonify({"success": True , "drinks": updated_drink})
     except:
         abort(422)
         print(sys.exc_info())
@@ -151,7 +151,7 @@ def delete_drink(id):
             print(sys.exc_info())
 
         drink.delete()
-        return {"success": True , "delete": id}
+        return jsonify({"success": True , "delete": id})
     except:
         abort(422)
         print(sys.exc_info())
