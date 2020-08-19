@@ -31,10 +31,11 @@ class AuthError(Exception):
     return the token part of the header [DONE]
 '''
 def get_token_auth_header():
-    auth = request.header.get('Authorization',None)
-    if not auth:
+    if 'Authorization' not in request.headers:
         raise AuthError({'code':'authorization_header_missing','description':'Authorization header is expected.'},401)
-    parts = auth.split()
+
+    auth_header = request.headers['Authorization']
+    parts =  auth_header.split(' ')
     if parts[0].lower() != 'bearer':
         raise AuthError({'code':'invalid_header','description':'Authorization header must start with "Bearer".'},401)
     elif len(parts) == 1:
@@ -58,7 +59,7 @@ def check_permissions(permission, payload):
     if 'permissions' not in payload:
         raise AuthError({'code':'invalid_claims','description':'Permissions not included in JWT.'},400)
     if permission not in payload['permissions']:
-        raise AuthError({'code':'unauthorized','description':'Permission not found.'},403)
+        raise AuthError({'code':'unauthorized','description':'Permission not found.'},401)
     return True
 
 '''
@@ -94,7 +95,7 @@ def verify_decode_jwt(token):
         try:
             payload = jwt.decode(
                 token,
-                rsa_key,
+                rsa_keys,
                 algorithms=ALGORITHMS,
                 audience=API_AUDIENCE,
                 issuer='https://' + AUTH0_DOMAIN + '/'
