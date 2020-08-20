@@ -31,11 +31,11 @@ CORS(app)
 @app.route('/drinks',methods=['GET'])
 def view_drinks():
     try:
-        drinks = Drink.query.all()
-
+        drinks = Drink.query.order_by(Drink.id).all()
         drinks_list = []
         for drink in drinks:
             drinks_list.append(drink.short())
+        print(drinks_list)
         return jsonify({"success":True , "drinks": drinks_list})
     except:
         abort(404)
@@ -86,9 +86,9 @@ def add_drink(payload):
     try:
         body = request.get_json()
         new_drink = Drink(
-                    title = body.get('title'),
-                    recipe = body.get('recipe')
-            )
+                title = body.get('title'),
+                recipe = body.get('recipe') if type(body.get('recipe')) == str else json.dumps(body.get('recipe'))
+                )
         new_drink.insert()
         drink = new_drink.long()
         return jsonify({"success": True , "drinks": drink})
@@ -120,7 +120,7 @@ def update_drink(payload,id):
 
         body = request.get_json()
         drink.title = body.get('title')
-        drink.recipe = body.get('recipe')
+        # drink.recipe = json.dumps(body.get('recipe'))
         drink.update()
 
         updated_drink = drink.long()
@@ -197,10 +197,13 @@ def not_found(error):
 @TODO implement error handler for AuthError
     error handler should conform to general task above
 '''
-@app.errorhandler(401)
-def not_found(error):
+@app.errorhandler(AuthError)
+def AuthError(error):
+    # response = jsonify(ex.error)
+    # response.status_code = ex.status_code
+    # return response
     return jsonify({
                     "success": False,
-                    "error": 401,
-                    "message": "auth error"
+                    "error": error.status_code,
+                    "message": error.error
                     }), 401
