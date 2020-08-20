@@ -30,16 +30,15 @@ CORS(app)
 '''
 @app.route('/drinks',methods=['GET'])
 def view_drinks():
-    try:
-        drinks = Drink.query.order_by(Drink.id).all()
-        drinks_list = []
-        for drink in drinks:
-            drinks_list.append(drink.short())
-        print(drinks_list)
-        return jsonify({"success":True , "drinks": drinks_list})
-    except:
+    drinks = Drink.query.all()
+    print('test')
+    if drinks is None:
         abort(404)
-        print(sys.exc_info())
+    drinks_list = []
+    for drink in drinks:
+        drinks_list.append(drink.long())
+    return jsonify({"success":True , "drinks":drinks_list})
+
 
 
 
@@ -85,13 +84,15 @@ def get_drinks_detail(payload):
 def add_drink(payload):
     try:
         body = request.get_json()
+        if(body is None):
+            abort(404)
         new_drink = Drink(
                 title = body.get('title'),
-                recipe = body.get('recipe') if type(body.get('recipe')) == str else json.dumps(body.get('recipe'))
+                recipe =json.dumps(body.get('recipe'))
                 )
         new_drink.insert()
-        drink = new_drink.long()
-        return jsonify({"success": True , "drinks": drink})
+        drink = Drink.query.filter_by(id=new_drink.id).first()
+        return jsonify({"success": True , "drinks": [drink.long()]})
     except:
         abort(422)
         print(sys.exc_info())
@@ -119,8 +120,13 @@ def update_drink(payload,id):
             print(sys.exc_info())
 
         body = request.get_json()
-        drink.title = body.get('title')
-        # drink.recipe = json.dumps(body.get('recipe'))
+        title_update = body.get('title')
+        recipe_update = json.dumps(body.get('recipe'))
+        if title_update:
+            drink.title = title_update
+        if recipe_update:
+            drink.recipe = recipe_update
+
         drink.update()
 
         updated_drink = drink.long()
