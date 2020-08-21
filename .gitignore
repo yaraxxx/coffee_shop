@@ -15,3 +15,5 @@ apiV2.py
 .Trashes
 ehthumbs.db
 Thumbs.db
+node_module
+env
