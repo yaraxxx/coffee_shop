@@ -130,7 +130,7 @@ def update_drink(payload,id):
         drink.update()
 
         updated_drink = drink.long()
-        return jsonify({"success": True , "drinks": updated_drink})
+        return jsonify({"success": True , "drinks": [updated_drink]})
     except:
         abort(422)
         print(sys.exc_info())
