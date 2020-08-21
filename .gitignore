@@ -2,9 +2,7 @@ venv/
 .vscode/
 __pycache__/
 test.db
-env/
-node_module/
-apiV2.py
+
 
 # OS generated files #
 ######################
@@ -15,5 +13,4 @@ apiV2.py
 .Trashes
 ehthumbs.db
 Thumbs.db
-node_module
-env
+
